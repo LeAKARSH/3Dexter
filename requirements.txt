@@ -1,0 +1,18 @@
+# Base ML Libraries
+torch
+transformers
+datasets
+
+# Fine-Tuning & Memory Optimization (Crucial for 4GB VRAM)
+accelerate
+peft
+bitsandbytes
+trl<0.9.0
+xformers<0.0.27
+
+# Data Generation scripts
+openai
+tqdm
+
+# Unsloth (Highly optimized training engine)
+unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git
