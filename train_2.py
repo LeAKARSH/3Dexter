@@ -1,29 +1,27 @@
 import json
-from datasets import Dataset
+from datasets import Dataset, load_dataset
 from unsloth import FastLanguageModel
 from trl import SFTTrainer
 from transformers import TrainingArguments
 from unsloth import is_bfloat16_supported
 
 # ── 1. Configuration ──────────────────────────────────────────────────────────
-DATASET_PATH = "generated_code_cap3d.jsonl"
-MODEL_NAME = "unsloth/Qwen2.5-Coder-1.5B" # Highly capable, fits in 4GB VRAM
-MAX_SEQ_LENGTH = 1024                     # Limit context to save VRAM
+DATASET_NAME = "redcathode/thingiverse-openscad"  # Hugging Face dataset
+MODEL_NAME = "unsloth/Qwen2.5-Coder-1.5B"  # Highly capable, fits in 4GB VRAM
+MAX_SEQ_LENGTH = 1024  # Limit context to save VRAM
 OUTPUT_DIR = "openscad_lora_model"
 
 # ── 2. Load and Prepare Dataset ───────────────────────────────────────────────
-print("Loading dataset...")
-data = []
-with open(DATASET_PATH, "r", encoding="utf-8") as f:
-    for line in f:
-        if line.strip():
-            item = json.loads(line)
-            # Skip empty code generations or errors
-            if item.get("code") and len(item["code"]) > 10:
-                data.append(item)
+print("Loading dataset from Hugging Face...")
+dataset = load_dataset(DATASET_NAME)
 
-# Convert to HuggingFace Dataset
-dataset = Dataset.from_list(data)
+# Get the split (usually 'train')
+if "train" in dataset:
+    dataset = dataset["train"]
+else:
+    dataset = dataset[list(dataset.keys())[0]]
+
+print(f"Loaded dataset with {len(dataset)} examples")
 
 # Define the Prompt Format (Alpaca Style)
 alpaca_prompt = """Below is a description of a 3D object. Write valid OpenSCAD code to generate it.
@@ -34,18 +32,45 @@ alpaca_prompt = """Below is a description of a 3D object. Write valid OpenSCAD c
 ### OpenSCAD Code:
 {}"""
 
-EOS_TOKEN = "<|endoftext|>" # End of sequence token for Qwen
+EOS_TOKEN = "<|endoftext|>"  # End of sequence token for Qwen
+
+# Determine field names based on dataset structure
+# Try common field names for prompt/description and code
+def get_field_names(dataset):
+    """Determine the field names for text and code in the dataset."""
+    features = dataset.features
+    
+    # Look for description/prompt fields
+    text_fields = ["description", "prompt", "text", "input"]
+    code_fields = ["code", "output", "openscad", "script"]
+    
+    text_field = None
+    for field in text_fields:
+        if field in features:
+            text_field = field
+            break
+    
+    code_field = None
+    for field in code_fields:
+        if field in features:
+            code_field = field
+            break
+    
+    return text_field, code_field
+
+text_field, code_field = get_field_names(dataset)
+print(f"Using text field: {text_field}, code field: {code_field}")
 
 def formatting_prompts_func(examples):
-    prompts = examples["prompt"]
-    codes = examples["code"]
+    prompts = examples[text_field]
+    codes = examples[code_field]
     texts = []
     for prompt, code in zip(prompts, codes):
         text = alpaca_prompt.format(prompt, code) + EOS_TOKEN
         texts.append(text)
-    return { "text" : texts }
+    return {"text": texts}
 
-dataset = dataset.map(formatting_prompts_func, batched = True)
+dataset = dataset.map(formatting_prompts_func, batched=True)
 
 # ── 3. Load Model (4-bit Quantized) ───────────────────────────────────────────
 print("Loading Model in 4-bit...")
