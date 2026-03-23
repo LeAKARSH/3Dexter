@@ -7,9 +7,11 @@ from unsloth import is_bfloat16_supported
 
 # ── 1. Configuration ──────────────────────────────────────────────────────────
 DATASET_PATH = "generated_code_cap3d.jsonl"
-MODEL_NAME = "unsloth/Qwen2.5-Coder-1.5B" # Highly capable, fits in 4GB VRAM
-MAX_SEQ_LENGTH = 1024                     # Limit context to save VRAM
-OUTPUT_DIR = "openscad_lora_model"
+#MODEL_NAME = "unsloth/Qwen2.5-Coder-1.5B" # Highly capable, fits in 4GB VRAM
+MODEL_NAME = "unsloth/Qwen2.5-Coder-3B"   # Best balance for 6GB VRAM
+#MODEL_NAME = "unsloth/Qwen2.5-Coder-7B"  # Too large for 6GB VRAM
+MAX_SEQ_LENGTH = 1024                     # 3B can handle full context easily
+OUTPUT_DIR = "openscad_lora_model_3b_2"     # Save to different folder
 
 # ── 2. Load and Prepare Dataset ───────────────────────────────────────────────
 print("Loading dataset...")
@@ -82,10 +84,11 @@ trainer = SFTTrainer(
     packing = False, # Can make training faster for short sequences
     args = TrainingArguments(
         per_device_train_batch_size = 1,      # VRAM savior
-        gradient_accumulation_steps = 4,      # Simulates batch_size of 4
+        gradient_accumulation_steps = 4,      # Good for 6GB VRAM with 7B model
         warmup_steps = 10,
-        max_steps = 200,                      # Adjust based on dataset size (or use num_train_epochs = 1)
-        learning_rate = 2e-4,
+        num_train_epochs = 5,                 # Increased from 3 for better convergence
+        #max_steps = 200,                   # Or limit to 200 steps for quick testing
+        learning_rate = 1e-4,                 # Reduced from 2e-4 for 3B stability
         fp16 = not is_bfloat16_supported(),   # Ampere (RTX 3050) supports bfloat16
         bf16 = is_bfloat16_supported(),
         logging_steps = 1,

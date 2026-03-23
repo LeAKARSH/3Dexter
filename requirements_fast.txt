@@ -1,0 +1,37 @@
+# ============================================================================
+# FAST INSTALLATION REQUIREMENTS
+# ============================================================================
+# Install in order:
+# 1. pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# 2. pip install -r requirements_fast.txt
+# ============================================================================
+
+# Core ML Libraries (PyTorch installed separately via wheel)
+transformers>=4.36.0
+datasets>=2.14.0
+
+# Fine-Tuning & Memory Optimization
+accelerate>=0.25.0
+peft>=0.7.0
+bitsandbytes>=0.41.0
+
+# TRL - removed version constraint to avoid source build
+trl
+
+# Data Generation
+openai
+tqdm
+
+# ============================================================================
+# XFORMERS - SKIP if causing issues, it's optional for speedup
+# On Windows, pre-built wheels may not exist for all versions
+# Try: pip install xformers --index-url https://download.pytorch.org/whl/cu118
+# Or: Skip it entirely, training will still work
+# ============================================================================
+
+# ============================================================================
+# UNSLOTH - Install separately AFTER everything else
+# 
+
+# This takes longest as it builds from source
+# ============================================================================

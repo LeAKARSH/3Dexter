@@ -1,0 +1,6 @@
+/venv
+/unsloth_compiled_cache
+openscad_lora_model/
+openscad_lora_model_3b/
+openscad_lora_model_3b_2/
+outputs/

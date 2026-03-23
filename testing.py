@@ -70,7 +70,7 @@ def load_model(model_dir: str):
 
 
 # ── 2. Inference ──────────────────────────────────────────────────────────────
-def generate_openscad(prompt: str, model, tokenizer, max_new_tokens: int = 512) -> tuple[str, float]:
+def generate_openscad(prompt: str, model, tokenizer, max_new_tokens: int = 1024) -> tuple[str, float]:
     """Generate OpenSCAD code for a given description. Returns (code, latency)."""
     input_text = alpaca_prompt.format(prompt, "")  # Empty code section for generation
     inputs = tokenizer(input_text, return_tensors="pt").to(model.device)
@@ -80,7 +80,7 @@ def generate_openscad(prompt: str, model, tokenizer, max_new_tokens: int = 512) 
         outputs = model.generate(
             **inputs,
             max_new_tokens  = max_new_tokens,
-            temperature     = 0.1,      # Low temperature for deterministic code
+            temperature     = 0.1,      # Low temperature works best for code
             do_sample       = True,
             pad_token_id    = tokenizer.eos_token_id,
             eos_token_id    = tokenizer.eos_token_id,
@@ -91,8 +91,18 @@ def generate_openscad(prompt: str, model, tokenizer, max_new_tokens: int = 512) 
     generated_tokens = outputs[0][inputs["input_ids"].shape[1]:]
     generated_text   = tokenizer.decode(generated_tokens, skip_special_tokens=True)
 
-    # Clean up: stop at any trailing prompt artifacts
-    generated_text = generated_text.split("### Description:")[0].strip()
+    # Extract ONLY the first code block before any repetition
+    # Stop at the first occurrence of prompt patterns
+    stop_patterns = ["### Description:", "### Human:", "Human:", "Below is a description"]
+    for pattern in stop_patterns:
+        if pattern in generated_text:
+            generated_text = generated_text.split(pattern)[0].strip()
+            break
+    
+    # If there's still a "### OpenSCAD Code:" header, skip it
+    if "### OpenSCAD Code:" in generated_text:
+        generated_text = generated_text.split("### OpenSCAD Code:")[-1].strip()
+    
     return generated_text, latency
 
 
@@ -126,13 +136,20 @@ def check_openscad_syntax(code: str) -> tuple[bool, str]:
     try:
         with tempfile.NamedTemporaryFile(suffix=".scad", mode="w", delete=False) as f:
             f.write(code)
-            tmp_path = f.name
+            tmp_scad_path = f.name
 
+        # Create temp output file path
+        tmp_stl_path = tmp_scad_path.replace(".scad", "_check.stl")
+        
         result = subprocess.run(
-            [OPENSCAD_BIN, "--hardwarnings", "-o", "/dev/null", tmp_path],
+            [OPENSCAD_BIN, "--hardwarnings", "-o", tmp_stl_path, tmp_scad_path],
             capture_output=True, text=True, timeout=10
         )
-        os.unlink(tmp_path)
+        
+        # Clean up temp files
+        os.unlink(tmp_scad_path)
+        if os.path.exists(tmp_stl_path):
+            os.unlink(tmp_stl_path)
 
         if result.returncode == 0:
             return True, ""

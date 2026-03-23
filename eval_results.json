@@ -1,0 +1,459 @@
+{
+  "total_samples": 50,
+  "syntax_accuracy": 0.78,
+  "render_accuracy": 0.78,
+  "avg_token_overlap": 0.6993,
+  "avg_latency_seconds": 96.2019,
+  "results": [
+    {
+      "prompt": "A metal detail transport rack with multiple horizontal bars, four blue caster wheels, and dimension labels indicating an approximate height of 150 cm, width of 65 cm, and length of 85 cm.",
+      "generated_code": "rack_height = 1500;\nrack_width = 650;\nrack_length = 850;\nbar_thickness = 20;\nwheel_radius = 40;\nwheel_width = 25;\n\nmodule wheel() {\n    color(\"blue\")\n    cylinder(r=wheel_radius, h=wheel_width, $fn=32);\n}\n\nmodule rack_base() {\n    color(\"silver\")\n    difference() {\n        cube([rack_length, rack_width, bar_thickness]);\n        translate([bar_thickness/2, bar_thickness/2, -1])\n            cube([rack_length - 2*bar_thickness, rack_width - 2*bar_thickness, bar_thickness + 2]);\n    }\n}\n\nmodule horizontal_bars() {\n    color(\"silver\")\n    for (l = [0 : 50 : rack_length - bar_thickness]) {\n        translate([l, 0, bar_thickness])\n            cube([bar_thickness, rack_width, 10]);\n    }\n}\n\nunion() {\n    rack_base();\n    horizontal_bars();\n    \n    translate([rack_length/2 - bar_thickness/2, rack_width/2 - bar_thickness/2, bar_thickness])\n        rotate([90, 0, 0])\n        cylinder(r=bar_thickness/2, h=rack_length, $fn=16);\n    \n    translate([100, 100, bar_thickness]) wheel();\n    translate([100, 200, bar_thickness]) wheel();\n    translate([100, 300, bar_thickness]) wheel();\n    translate([100, 400, bar_thickness]) wheel();\n}\n\ntranslate([0, 0, bar_thickness + rack_length])\n    linear_extrude(height=2)\n    text(\"W\", size=50, halign=\"center\", valign=\"center\");\ntranslate([0, 0, bar_thickness + rack_length])\n    linear_extrude(height=2)\n    text(\"H\", size=50, halign=\"center\", valign=\"center\");\ntranslate([0, 0, bar_thickness + rack_length])\n    linear_extrude(height=2)\n    text(\"D\", size=50, halign=\"center\", valign=\"center\");",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.4805,
+      "latency_seconds": 94.8287,
+      "error_message": "Geometries in cache: 39\nGeometry cache size in bytes: 113408\nCGAL Polyhedrons in cache: 6\nCGAL cache size in bytes: 2186912\nTotal rendering time: 0:00:05.199\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A set of seven wooden blocks featuring diverse geometric shapes, including a right triangular prism, a rectangular prism with a notch, a curved block, a small cuboid, a cylindrical piece with a notch, a block with a concave cutout, and a small prism with an angled top.",
+      "generated_code": "block_size = 20;\nspacing = 30;\n\n// 1. Right triangular prism\ntranslate([-2 * spacing, 0, 0])\nlinear_extrude(height = block_size)\npolygon(points=[[0,0], [block_size, 0], [0, block_size]]);\n\n// 2. Rectangular prism with a notch\ntranslate([-1 * spacing, 0, 0])\ndifference() {\n    cube([block_size, block_size, block_size]);\n    translate([block_size/4, block_size/4, 0])\n    cube([block_size/2, block_size/4, block_size]);\n}\n\n// 3. Curved block (Cylinder segment)\ntranslate([0, 0, 0])\nintersection() {\n    cylinder(r = block_size, h = block_size, $fn = 50);\n    cube([block_size, block_size, block_size]);\n}\n\n// 4. Small cuboid\ntranslate([1 * spacing, 0, 0])\ncube([block_size/2, block_size/2, block_size]);\n\n// 5. Cylindrical piece with a notch\ntranslate([2 * spacing, 0, 0])\ndifference() {\n    cylinder(r = block_size/2, h = block_size, $fn = 50);\n    translate([0, 0, block_size/4])\n    cube([block_size, block_size/2, block_size/2], center = true);\n}\n\n// 6. Block with a concave cutout\ntranslate([3 * spacing, 0, 0])\ndifference() {\n    cube([block_size, block_size, block_size]);\n    translate([block_size/2, block_size/2, block_size/2])\n    rotate([90, 0, 0])\n    cylinder(r = block_size/4, h = block_size, $fn = 20);\n}\n\n// 7. Small prism with an angled top\ntranslate([4 * spacing, 0, 0])\npolyhedron(\n    points=[[0,0,0], [block_size,0,0], [block_size,block_size,0], [0,block_size,0], [0,0,block_size], [block_size,0,block_size]],\n    faces=[[0,1,2,3], [0,1,5,4], [1,2,5], [2,3,4,5], [0,4,3]]\n);",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.9474,
+      "latency_seconds": 91.7754,
+      "error_message": "ERROR: The given mesh is not closed! Unable to convert to CGAL_Nef_Polyhedron.\nGeometries in cache: 17\nGeometry cache size in bytes: 31648\nCGAL Polyhedrons in cache: 9\nCGAL cache size in bytes: 842240"
+    },
+    {
+      "prompt": "Gear with twelve evenly spaced teeth around its circumference, featuring a central square hole and a thickness that varies, blending cylindrical and conical shapes.",
+      "generated_code": "teeth_count = 12;\ntooth_depth = 5;\ntooth_width = 8;\nhole_size = 10;\nbase_radius = 20;\ntop_radius = 10;\nheight_variation = 15;\n\nmodule gear_profile() {\n    union() {\n        cylinder(r = base_radius, h = height_variation, $fn = 100);\n        translate([0, 0, height_variation])\n        cylinder(r = top_radius, h = height_variation, $fn = 100);\n        \n        for (i = [0 : teeth_count - 1]) {\n            rotate([0, 0, i * (360 / teeth_count)])\n            translate([base_radius, 0, 0])\n            cube([tooth_width, tooth_width, height_variation * 2], center = true);\n        }\n    }\n}\n\ndifference() {\n    gear_profile();\n    \n    translate([0, 0, -1])\n    cube([hole_size, hole_size, height_variation + 2], center = true);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7174,
+      "latency_seconds": 91.9001,
+      "error_message": "Geometries in cache: 19\nGeometry cache size in bytes: 55304\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 1201472\nTotal rendering time: 0:00:03.175\n   Top level object is a 3D object:\n   Simp"
+    },
+    {
+      "prompt": "A mechanical assembly consisting of a vertical cylindrical rod attached to a bent pipe-like base, connected by flange joints and featuring a gear mechanism on the side.",
+      "generated_code": "rod_radius = 5;\nrod_height = 100;\npipe_radius = 10;\nflange_radius = 15;\nflange_thickness = 5;\ngear_radius = 20;\ngear_thickness = 10;\n\nunion() {\n    // Vertical Rod\n    cylinder(r=rod_radius, h=rod_height, $fn=50);\n\n    // Flange at base\n    translate([0, 0, -flange_thickness])\n    cylinder(r=flange_radius, h=flange_thickness, $fn=50);\n\n    // Bent Pipe Base\n    translate([0, 0, -rod_height])\n    union() {\n        cylinder(r=pipe_radius, h=30, $fn=50);\n        rotate([0, 0, 45])\n        translate([0, 0, 30])\n        cylinder(r=pipe_radius, h=40, $fn=50);\n    }\n\n    // Flange on pipe\n    translate([0, 0, -rod_height + 30])\n    rotate([0, 0, 45])\n    translate([0, 0, 30])\n    cylinder(r=flange_radius, h=flange_thickness, $fn=50);\n\n    // Gear Mechanism\n    translate([rod_radius + gear_radius - 5, 0, rod_height / 2])\n    rotate([0, 90, 0])\n    union() {\n        cylinder(r=gear_radius, h=gear_thickness, $fn=12);\n        for (i = [0:11]) {\n            rotate([0, 0, i * 30])\n            translate([gear_radius, 0, 0])\n            cube([10, 5, gear_thickness], center=true);\n        }\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7895,
+      "latency_seconds": 89.1923,
+      "error_message": "Geometries in cache: 25\nGeometry cache size in bytes: 85592\nCGAL Polyhedrons in cache: 7\nCGAL cache size in bytes: 2913152\nTotal rendering time: 0:00:03.230\n   Top level object is a 3D object:\n   Simp"
+    },
+    {
+      "prompt": "A collection of various geometric shapes, including a cylinder, sphere, ring, cone, cube, octagon, and an irregular shape.",
+      "generated_code": "$fn = 100;\n\n// Variables\nbase_radius = 20;\nheight = 40;\nspacing = 30;\n\n// 1. Cylinder\ntranslate([-60, 0, 0])\ncylinder(r = base_radius, h = height);\n\n// 2. Sphere\ntranslate([-20, 0, 0])\nsphere(r = base_radius);\n\n// 3. Ring\ntranslate([20, 0, 0])\ndifference() {\n    cylinder(r = base_radius + 5, h = height);\n    cylinder(r = base_radius - 2, h = height);\n}\n\n// 4. Cone\ntranslate([50, 0, 0])\ncylinder(r1 = base_radius, r2 = 0, h = height);\n\n// 5. Cube\ntranslate([80, 0, 0])\ncube([base_radius * 1.5, base_radius * 1.5, height], center = true);\n\n// 6. Octagon\ntranslate([-55, 20, 0])\nrotate([0, 0, 45])\ndifference() {\n    cylinder(r = base_radius, h = height, $fn = 8);\n    cylinder(r = base_radius - 5, h = height, $fn = 8);\n}\n\n// 7. Irregular Shape\ntranslate([-55, -20, 0])\nintersection() {\n    sphere(r = base_radius * 0.8);\n    translate([0, 0, -base_radius]) cube([base_radius * 2, base_radius * 2, base_radius * 2], center = true);\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.4697,
+      "latency_seconds": 91.0488,
+      "error_message": "OpenSCAD timed out during syntax check"
+    },
+    {
+      "prompt": "A bent rectangular metal bracket with multiple holes and a long slot, featuring dimensions of 70 mm by 56 mm by 28 mm.",
+      "generated_code": "bracket_width = 70;\nbracket_depth = 56;\nbracket_thickness = 28;\nhole_diameter = 4;\nslot_length = 40;\n\n$fn = 50;\n\ndifference() {\n    union() {\n        cube([bracket_width, bracket_depth, bracket_thickness]);\n        \n        // Bent part\n        translate([bracket_width, 0, bracket_thickness - 10])\n        rotate([0, 0, 0])\n        linear_extrude(height = bracket_thickness)\n        polygon(points=[[0,0], [bracket_depth, 0], [bracket_depth, 10], [0, 10]]);\n    }\n\n    // Slots\n    translate([bracket_width / 2, bracket_depth - 10, bracket_thickness - 5])\n    rotate([90, 0, 0])\n    cylinder(h = 10, d = slot_length, center = true);\n\n    // Holes\n    translate([10, 10, bracket_thickness - 2])\n    cylinder(h = 10, d = hole_diameter);\n    \n    translate([bracket_width - 10, 10, bracket_thickness - 2])\n    cylinder(h = 10, d = hole_diameter);\n    \n    translate([10, bracket_depth - 10, bracket_thickness - 2])\n    cylinder(h = 10, d = hole_diameter);\n    \n    translate([bracket_width - 10, bracket_depth - 10, bracket_thickness - 2])\n    cylinder(h = 10, d = hole_diameter);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.4483,
+      "latency_seconds": 91.2664,
+      "error_message": "Geometries in cache: 13\nGeometry cache size in bytes: 62736\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 672592\nTotal rendering time: 0:00:00.989\n   Top level object is a 3D object:\n   Simpl"
+    },
+    {
+      "prompt": "A composition of geometric shapes, including a cylinder, a hexagonal prism, a sphere, a truncated cone, and a rectangular prism.",
+      "generated_code": "cylinder_radius = 10;\ncylinder_height = 20;\nhex_radius = 12;\nhex_height = 15;\nsphere_radius = 8;\ncone_bottom_radius = 15;\ncone_top_radius = 5;\ncone_height = 20;\nrect_size = [15, 15, 15];\n\nunion() {\n    // Cylinder\n    translate([-30, 0, 0])\n    cylinder(r = cylinder_radius, h = cylinder_height, $fn = 50);\n\n    // Hexagonal Prism\n    translate([-15, 0, 0])\n    cylinder(r = hex_radius, h = hex_height, $fn = 6);\n\n    // Sphere\n    translate([0, 0, sphere_radius])\n    sphere(r = sphere_radius, $fn = 50);\n\n    // Truncated Cone\n    translate([15, 0, 0])\n    cylinder(r1 = cone_bottom_radius, r2 = cone_top_radius, h = cone_height, $fn = 50);\n\n    // Rectangular Prism\n    translate([30, 0, 0])\n    cube(rect_size, center = true);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6607,
+      "latency_seconds": 96.0176,
+      "error_message": "Geometries in cache: 10\nGeometry cache size in bytes: 388400\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 2617912\nTotal rendering time: 0:00:02.740\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "Set of four wooden blocks, including a tall cylinder, a pentagonal prism, a rectangular prism, and a wedge-shaped block.",
+      "generated_code": "block_width = 20;\nblock_depth = 20;\nblock_height = 40;\n\n// Tall Cylinder\ntranslate([-60, 0, 0])\ncylinder(h = block_height, r = block_width / 2, $fn = 50);\n\n// Pentagonal Prism\ntranslate([-20, 0, 0])\nlinear_extrude(height = block_height)\ncircle(r = block_width / 1.5, $fn = 5);\n\n// Rectangular Prism\ntranslate([20, 0, 0])\ncube([block_width, block_depth, block_height]);\n\n// Wedge-shaped block\ntranslate([60, 0, 0])\npolyhedron(\n  points = [\n    [0, 0, 0], [block_width, 0, 0], [block_width, block_depth, 0], [0, block_depth, 0], \n    [0, 0, block_height], [block_width, 0, block_height/2]\n  ],\n  faces = [\n    [0, 1, 2, 3], [0, 4, 5, 1], [1, 5, 2], [2, 5, 4, 3], [3, 4, 0]\n  ]\n);",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.9474,
+      "latency_seconds": 97.2356,
+      "error_message": "PolySet has nonplanar faces. Attempting alternate construction\nGeometries in cache: 9\nGeometry cache size in bytes: 20096\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 169552\nTotal rendering "
+    },
+    {
+      "prompt": "Abstract matte pink composition with a large half-cylinder notch, a cuboid, and a cylindrical hole on a base platform.",
+      "generated_code": "base_width = 100;\nbase_depth = 100;\nbase_height = 10;\ncuboid_size = [30, 30, 40];\ncylinder_radius = 15;\ncylinder_height = 20;\nnotch_radius = 25;\n\ncolor([0.9, 0.6, 0.8]) {\n    difference() {\n        union() {\n            // Base platform\n            cube([base_width, base_depth, base_height], center = true);\n            \n            // Cuboid\n            translate([0, 0, (base_height + cylinder_height) / 2])\n            cube(cuboid_size, center = true);\n        }\n        \n        // Large half-cylinder notch\n        translate([0, 0, base_height / 2])\n        rotate([0, 90, 0])\n        cylinder(r = notch_radius, h = 10, center = true);\n        \n        // Cylindrical hole through the center\n        translate([0, 0, 0])\n        cylinder(r = cylinder_radius, h = base_height + cuboid_size[2], center = true);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.8302,
+      "latency_seconds": 97.1043,
+      "error_message": "Geometries in cache: 8\nGeometry cache size in bytes: 24544\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 316944\nTotal rendering time: 0:00:00.241\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "A cluster of black geometric shapes, including a sphere with a ring around it, a cone, a cube, and a pyramid, arranged closely together.",
+      "generated_code": "sphere_radius = 10;\nring_thickness = 2;\nring_radius = 12;\ncone_radius = 8;\ncone_height = 15;\ncube_size = 12;\npyramid_size = 10;\n\n$fn = 100;\n\nunion() {\n    // Sphere with ring\n    translate([-20, 0, 0]) {\n        union() {\n            sphere(r = sphere_radius);\n            rotate_extrude(angle = 360)\n                translate([ring_radius, 0, 0])\n                    circle(r = ring_thickness);\n        }\n    }\n\n    // Cone\n    translate([20, 0, 0]) {\n        cylinder(r1 = cone_radius, r2 = 0, h = cone_height);\n    }\n\n    // Cube\n    translate([-20, 20, 0]) {\n        cube([cube_size, cube_size, cube_size], center = true);\n    }\n\n    // Pyramid\n    translate([20, 20, 0]) {\n        polyhedron(\n            points = [\n                [0, 0, pyramid_size], [pyramid_size, 0, 0], [0, pyramid_size, 0], [pyramid_size, pyramid_size, 0], [pyramid_size, pyramid_size, pyramid_size], [0, pyramid_size, pyramid_size]\n            ],\n            faces = [\n                [0, 1, 2], [0, 2, 4, 5], [0, 5, 3], [3, 5, 4, 1], [1, 4, 3]\n            ]\n        );\n    }\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.7258,
+      "latency_seconds": 95.2099,
+      "error_message": "OpenSCAD timed out during syntax check"
+    },
+    {
+      "prompt": "A smooth, cylindrical solid with a hollow, circular center and uniform thickness, resembling a ring or washer.",
+      "generated_code": "outer_radius = 25;\ninner_radius = 20;\nheight = 10;\n$fn = 100;\n\ndifference() {\n    cylinder(r = outer_radius, h = height, center = true);\n    cylinder(r = inner_radius, h = height + 1, center = true);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6154,
+      "latency_seconds": 97.3439,
+      "error_message": "Geometries in cache: 2\nGeometry cache size in bytes: 29104\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 538320\nTotal rendering time: 0:00:00.391\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "A section of a hollow-core slab and wall assembly featuring a vertical panel intersecting with layered horizontal slabs, including cylindrical voids for weight reduction.",
+      "generated_code": "slab_width = 100;\nslab_depth = 100;\nslab_thickness = 10;\nvoid_radius = 8;\nvoid_spacing = 15;\nlayer_count = 3;\n\nmodule hollow_slab() {\n    difference() {\n        cube([slab_width, slab_depth, slab_thickness], center = true);\n        \n        for (i = [-layer_count * void_spacing : void_spacing : 0]) {\n            translate([0, 0, i / (layer_count + 1)])\n            rotate([90, 0, 0])\n            cylinder(r = void_radius, h = slab_depth + 2, center = true, $fn = 32);\n        }\n    }\n}\n\nunion() {\n    // Vertical Panel\n    cube([slab_thickness, slab_depth, slab_width], center = true);\n    \n    // Horizontal Slabs\n    for (j = [-layer_count * slab_thickness : slab_thickness : 0]) {\n        translate([0, 0, j / (layer_count + 1)])\n        hollow_slab();\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.5714,
+      "latency_seconds": 96.041,
+      "error_message": "Geometries in cache: 8\nGeometry cache size in bytes: 30016\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 858112\nTotal rendering time: 0:00:02.365\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "A collection of geometric shapes including a cone, cylinder, cube, sphere, torus, and a complex spiked shape, all with a colorful numbered grid.",
+      "generated_code": "$fn = 100;\n\ngrid_size = 40;\nspacing = 60;\nnum_rows = 3;\nnum_cols = 3;\n\nmodule numbered_grid() {\n    for (i = [0 : num_rows * num_cols - 1]) {\n        x = (i % num_cols) * spacing;\n        y = (i / num_cols) * spacing;\n        color([i / num_rows, i / num_cols, 0.5])\n        translate([x, y, 0])\n        linear_extrude(height = 2)\n        text(str(i + 1), size = 8, font = \"Liberation Sans:style=Bold\");\n    }\n}\n\n// 1. Cone\ntranslate([0, 0, spacing * 1.5])\ncolor(\"red\")\ncylinder(r1 = 15, r2 = 0, h = 30);\n\n// 2. Cylinder\ntranslate([spacing * 0.5, 0, spacing * 1.5])\ncolor(\"blue\")\ncylinder(r = 10, h = 30);\n\n// 3. Cube\ntranslate([spacing * 2, 0, spacing * 1.5])\ncolor(\"green\")\ncube([20, 20, 20], center = true);\n\n// 4. Sphere\ntranslate([spacing * 3.5, 0, spacing * 1.5])\ncolor(\"yellow\")\nsphere(r = 12);\n\n// 5. Torus\ntranslate([spacing * 5, 0, spacing * 1.5])\ncolor(\"purple\")\nrotate_extrude(angle = 360)\ntranslate([10, 0, 0])\ncircle(r = 5);\n\n// 6. Complex Spiked Shape\ntranslate([spacing * 6.5, 0, spacing * 1.5])\ncolor(\"orange\")\nunion() {\n    sphere(r = 10);\n    for (a = [0 : 60 : 360]) {\n        rotate([0, 0, a])\n        translate([12, 0, 0])\n        rotate([0, 90, 0])\n        cylinder(r1 = 4, r2 = 0, h = 15);\n    }\n}\n\nnumbered_grid();",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.7349,
+      "latency_seconds": 95.6951,
+      "error_message": "WARNING: color() expects numbers between 0.0 and 1.0. Value of 1.3 is out of range in file tmpnrttswrr.scad, line 12\nTRACE: called by 'color' in file tmpnrttswrr.scad, line 12\nTRACE: called by 'for' i"
+    },
+    {
+      "prompt": "Metallic expansion bolt with a silver finish, featuring a threaded conical expansion sleeve, a central shaft with a helical ribbed section for expansion, a hexagonal nut, and a round flange for load distribution.",
+      "generated_code": "bolt_length = 100;\nbolt_radius = 5;\nnut_size = 12;\nnut_height = 8;\nflange_radius = 20;\nflange_thickness = 3;\nsleeve_length = 20;\nsleeve_radius = 12;\n\nunion() {\n    // Central Shaft\n    cylinder(r = bolt_radius, h = bolt_length, $fn = 50);\n\n    // Helical Ribbed Section\n    for (i = [0:10:360]) {\n        rotate([0, 0, i])\n        translate([bolt_radius - 0.5, 0, 10 + (i/360)*bolt_length])\n        cube([2, 1, 2]);\n    }\n\n    // Hexagonal Nut\n    translate([0, 0, 10])\n    cylinder(r = nut_size/1.732, h = nut_height, $fn = 6);\n\n    // Round Flange\n    translate([0, 0, 10 + nut_height])\n    cylinder(r = flange_radius, h = flange_thickness, $fn = 50);\n\n    // Threaded Conical Expansion Sleeve\n    translate([0, 0, 10 + nut_height + flange_thickness])\n    union() {\n        cylinder(r = sleeve_radius, h = sleeve_length, $fn = 50);\n        translate([0, 0, -10])\n        cylinder(r1 = 10, r2 = sleeve_radius, h = sleeve_length, $fn = 50);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7619,
+      "latency_seconds": 95.4149,
+      "error_message": "Geometries in cache: 83\nGeometry cache size in bytes: 105544\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 2276976\nTotal rendering time: 0:00:04.762\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A geometric structure combining a sloped base with a recessed semicircle and slot on top, a tall cylindrical pipe partially enclosed by a curved wall, an open rectangular cavity in the center, and a combination of curved and angular cutouts and extrusions on its surfaces.",
+      "generated_code": "base_w = 60;\nbase_d = 60;\nbase_h = 20;\npipe_r = 10;\npipe_h = 50;\ncavity_w = 20;\ncavity_d = 20;\ncavity_h = 40;\n\nunion() {\n    difference() {\n        union() {\n            // Sloped base\n            polyhedron(\n                points=[[0,0,0], [base_w,0,0], [base_w,base_d,0], [0,base_d,0], [0,0,base_h], [base_w,0,base_h/2]],\n                faces=[[0,1,2,3], [0,1,5,4], [1,2,5], [2,3,4,5], [0,4,5], [3,0,4]]\n            );\n            \n            // Tall pipe\n            translate([base_w/2, base_d/2, base_h/2])\n            rotate([0, 90, 0])\n            cylinder(r=pipe_r, h=pipe_h, $fn=32);\n            \n            // Curved wall\n            translate([base_w/2, base_d/2, base_h/2])\n            rotate([90, 0, 0])\n            cylinder(r=pipe_r + 5, h=20, $fn=32);\n        }\n        \n        // Center cavity\n        translate([base_w/2, base_d/2, base_h/2])\n        cube([cavity_w, cavity_d, cavity_h], center=true);\n        \n        // Recessed semicircle\n        translate([base_w/2, base_d/2, base_h/2])\n        rotate([90, 0, 0])\n        cylinder(r=15, h=5, $fn=64);\n        \n        // Slot\n        translate([base_w/2, base_d/2, base_h/2])\n        cube([20, 5, 20], center=true);\n    }\n    \n    // Angular cutouts\n    difference() {\n        translate([0, 0, base_h])\n        cube([base_w, base_d, 5]);\n        translate([10, 10, base_h + 5])\n        rotate([45, 0, 0])\n        cube([20, 20, 10]);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7273,
+      "latency_seconds": 97.3925,
+      "error_message": "ERROR: The given mesh is not closed! Unable to convert to CGAL_Nef_Polyhedron.\nGeometries in cache: 19\nGeometry cache size in bytes: 63872\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 647568"
+    },
+    {
+      "prompt": "A rectangular panel with a circular hole near one end and a small round protrusion on the side, measuring 120 cm by 61 cm.",
+      "generated_code": "panel_length = 1200;\npanel_width = 610;\npanel_thickness = 10;\nhole_radius = 50;\nprotrusion_radius = 15;\nprotrusion_height = 10;\n\nunion() {\n    difference() {\n        cube([panel_length, panel_width, panel_thickness]);\n        \n        translate([panel_length * 0.1, panel_width / 2, -1])\n        cylinder(r = hole_radius, h = panel_thickness + 2, $fn = 100);\n    }\n    \n    translate([panel_length * 0.9, panel_width / 2, panel_thickness])\n    rotate([0, 90, 0])\n    cylinder(r = protrusion_radius, h = protrusion_height, $fn = 50);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.8108,
+      "latency_seconds": 96.3887,
+      "error_message": "Geometries in cache: 6\nGeometry cache size in bytes: 51888\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 673952\nTotal rendering time: 0:00:00.462\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "A tapered, hollow, elongated ring with gear-like outer edges and a diamond-shaped hole in the center.",
+      "generated_code": "outer_radius = 20;\ninner_radius = 5;\nheight = 40;\ngear_teeth = 12;\ntooth_depth = 3;\n\n$fn = 100;\n\nmodule gear_profile() {\n    union() {\n        cylinder(r = outer_radius, h = height);\n        for (i = [0 : gear_teeth - 1]) {\n            rotate([0, 0, i * (360 / gear_teeth)])\n            translate([outer_radius, 0, 0])\n            cube([tooth_depth * 2, 5, height], center = true);\n        }\n    }\n}\n\ndifference() {\n    union() {\n        // Main body\n        gear_profile();\n        \n        // Tapered top\n        translate([0, 0, height])\n        scale([0.8, 0.8, 0.5])\n        gear_profile();\n    }\n    \n    // Diamond hole\n    rotate([0, 45, 0])\n    cylinder(r = inner_radius, h = height * 2, center = true);\n    \n    // Tapered top hole\n    translate([0, 0, height * 0.5])\n    rotate([0, 45, 0])\n    scale([0.8, 0.8, 0.5])\n    cylinder(r = inner_radius, h = height * 2, center = true);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6786,
+      "latency_seconds": 94.2642,
+      "error_message": "Geometries in cache: 20\nGeometry cache size in bytes: 97504\nCGAL Polyhedrons in cache: 6\nCGAL cache size in bytes: 4006296\nTotal rendering time: 0:00:04.440\n   Top level object is a 3D object:\n   Simp"
+    },
+    {
+      "prompt": "A rusty metal cylinder resembling a pipe or bolt with screw features.",
+      "generated_code": "$fn = 100;\n\npipe_radius = 10;\npipe_length = 60;\nthread_pitch = 5;\nthread_depth = 1.5;\nthread_count = 8;\n\nunion() {\n    difference() {\n        cylinder(r = pipe_radius, h = pipe_length);\n        \n        for (i = [0 : thread_count - 1]) {\n            translate([0, 0, i * thread_pitch])\n            rotate_extrude()\n            translate([pipe_radius - 0.5, 0, 0])\n            circle(r = 0.8);\n        }\n    }\n\n    translate([0, 0, pipe_length])\n    cylinder(r = pipe_radius + thread_depth, h = 5);\n\n    translate([0, 0, pipe_length + 5])\n    rotate([0, 90, 0])\n    cylinder(r = 2, h = 10, center = true);\n}\n\nfor (i = [0 : 10]) {\n    translate([\n        (sin(i * 40) * 5), \n        (cos(i * 40) * 5), \n        (sin(i * 20) * 15) + 5\n    ])\n    color([0.4, 0.2, 0.1])\n    sphere(r = 1.5);\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.6818,
+      "latency_seconds": 96.9634,
+      "error_message": "OpenSCAD timed out during syntax check"
+    },
+    {
+      "prompt": "A silver metal cylinder with writing, featuring a hole and resembling a pipe, ring, or tin can.",
+      "generated_code": "outer_diameter = 40;\ninner_diameter = 34;\nheight = 60;\ntext_depth = 0.5;\ntext_offset = 10;\n\ncolor([0.75, 0.75, 0.75]) {\n    difference() {\n        cylinder(h = height, d = outer_diameter, $fn = 100);\n        \n        translate([0, 0, -1])\n        cylinder(h = height + 2, d = inner_diameter, $fn = 100);\n    }\n\n    translate([0, 0, height / 2])\n    rotate([90, 0, 0])\n    linear_extrude(height = outer_diameter, center = true)\n    text(\"METAL\", size = 15, halign = \"center\", valign = \"center\", font = \"Liberation Sans:style=Bold\");\n}\n\ntranslate([0, 0, height / 2])\nrotate([90, 0, 0])\nlinear_extrude(height = outer_diameter, center = true)\ntext(\"CAN\", size = 15, halign = \"center\", valign = \"center\", font = \"Liberation Sans:style=Bold\");",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7358,
+      "latency_seconds": 96.9983,
+      "error_message": "Geometries in cache: 11\nGeometry cache size in bytes: 199080\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 4760240\nTotal rendering time: 0:00:03.178\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "Various metal objects: pipe, spring, screwdriver, bolt, screw, and rod.",
+      "generated_code": "$fn = 100;\n\n// Dimensions\npipe_od = 10;\npipe_id = 8;\npipe_len = 50;\nspring_r = 5;\nspring_h = 30;\ndriver_handle_r = 15;\ndriver_shaft_r = 5;\nbolt_r = 6;\nbolt_h = 20;\nscrew_r = 4;\nscrew_h = 15;\nrod_r = 7;\n\nunion() {\n    // Pipe\n    translate([-60, 0, 0])\n    difference() {\n        cylinder(r = pipe_od/2, h = pipe_len);\n        cylinder(r = pipe_id/2, h = pipe_len);\n    }\n\n    // Spring\n    translate([-20, 0, 0])\n    rotate([0, 90, 0])\n    for (i = [0:15]) {\n        rotate([0, 0, i * 20])\n        translate([spring_h * (1 - i/15), 0, 0])\n        rotate([0, 90, 0])\n        cylinder(r = spring_r, h = 1.5);\n    }\n\n    // Screwdriver\n    translate([20, 0, 0])\n    union() {\n        cylinder(r = driver_shaft_r, h = 40);\n        translate([0, 0, 40]) cylinder(r = driver_handle_r/2, h = 10);\n        translate([0, 0, 50]) rotate([0, 90, 0]) cylinder(r = 2, h = 15);\n    }\n\n    // Bolt\n    translate([50, 0, 0])\n    difference() {\n        cylinder(r = bolt_r, h = bolt_h);\n        translate([0, 0, 2]) cylinder(r = bolt_r/2, h = bolt_h);\n    }\n\n    // Screw\n    translate([80, 0, 0])\n    union() {\n        cylinder(r = screw_r, h = 10);\n        translate([0, 0, 10]) cylinder(r = 0.5, h = screw_h);\n    }\n\n    // Rod\n    translate([110, 0, 0])\n    cylinder(r = rod_r, h = 40);\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.6714,
+      "latency_seconds": 97.498,
+      "error_message": "OpenSCAD timed out during syntax check"
+    },
+    {
+      "prompt": "Abstract structure consisting of two elongated rectangular prisms intersecting at a right angle, attached to a smaller cube with a hollow center and a vertical rectangular prism inside the hollow.",
+      "generated_code": "prism_length = 60;\nprism_width = 10;\nprism_height = 10;\ncube_size = 20;\nhollow_size = 12;\ninner_prism_size = 8;\n\nunion() {\n    // Two elongated rectangular prisms intersecting at a right angle\n    translate([-prism_length/2, 0, 0])\n        cube([prism_length, prism_width, prism_height]);\n\n    rotate([0, 0, 45])\n        translate([0, prism_length/2, 0])\n            cube([prism_length, prism_width, prism_height]);\n\n    // Smaller cube with hollow center and vertical prism inside\n    translate([prism_length/2 + cube_size/2, 0, 0])\n        difference() {\n            cube(cube_size, center = true);\n            \n            // Hollow center\n            cube(hollow_size, center = true);\n            \n            // Vertical prism inside the hollow\n            rotate([0, 90, 0])\n                cylinder(h = cube_size + 2, r = inner_prism_size/2, center = true);\n        }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6379,
+      "latency_seconds": 96.8698,
+      "error_message": "Geometries in cache: 8\nGeometry cache size in bytes: 8416\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 300432\nTotal rendering time: 0:00:00.217\n   Top level object is a 3D object:\n   Simple:"
+    },
+    {
+      "prompt": "A purple sphere rests on a bent green cylindrical pipe, with a straight orange cylinder nearby.",
+      "generated_code": "sphere_radius = 10;\npipe_radius = 3;\npipe_length = 40;\norange_cylinder_radius = 5;\norange_cylinder_height = 20;\n\ncolor(\"purple\")\ntranslate([0, 0, pipe_length + sphere_radius])\nsphere(r = sphere_radius, $fn = 50);\n\ncolor(\"green\")\nunion() {\n    cylinder(r = pipe_radius, h = pipe_length, $fn = 20);\n    translate([pipe_radius, 0, pipe_length])\n    rotate([0, 90, 0])\n    cylinder(r = pipe_radius, h = 15, $fn = 20);\n}\n\ncolor(\"orange\")\ntranslate([30, 30, 0])\ncylinder(r = orange_cylinder_radius, h = orange_cylinder_height, $fn = 30);",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 1.0,
+      "latency_seconds": 96.2259,
+      "error_message": "Geometries in cache: 10\nGeometry cache size in bytes: 551600\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 3516472\nTotal rendering time: 0:00:01.730\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A beige hollow cylindrical ring with smooth, flat surfaces and consistent thickness.",
+      "generated_code": "outer_radius = 25;\ninner_radius = 20;\nheight = 10;\n$fn = 100;\n\ncolor([0.96, 0.92, 0.82]) {\n    difference() {\n        cylinder(r = outer_radius, h = height);\n        translate([0, 0, -1])\n            cylinder(r = inner_radius, h = height + 2);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.9259,
+      "latency_seconds": 96.8265,
+      "error_message": "Geometries in cache: 3\nGeometry cache size in bytes: 43656\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 1076640\nTotal rendering time: 0:00:00.400\n   Top level object is a 3D object:\n   Simpl"
+    },
+    {
+      "prompt": "A rectangular beige block and a shorter cylindrical object with a 2 cm scale.",
+      "generated_code": "block_width = 40;\nblock_depth = 20;\nblock_height = 30;\n\ncyl_radius = 10;\ncyl_height = 20;\n\nscale_factor = 20; // 1 cm = 20 units\n\ncolor([0.96, 0.96, 0.86]) {\n    cube([block_width, block_depth, block_height]);\n}\n\ntranslate([block_width / 2, block_depth / 2, block_height + cyl_height / 2]) {\n    rotate([0, 90, 0]) {\n        cylinder(r = cyl_radius, h = cyl_height, $fn = 50);\n    }\n}\n\ntranslate([0, 0, block_height + cyl_height]) {\n    color(\"red\") {\n        cube([1, 1, 1]);\n    }\n}\n\ntranslate([block_width + 10, 0, block_height / 2]) {\n    color(\"red\") {\n        cube([1, 1, 1]);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.75,
+      "latency_seconds": 97.0762,
+      "error_message": "Geometries in cache: 9\nGeometry cache size in bytes: 26424\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 170016\nTotal rendering time: 0:00:00.176\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "A hollow, irregularly shaped brown object resembling a dried seed pod or nut shell with a notch or protrusion on one side.",
+      "generated_code": "shell_width = 40;\nshell_depth = 30;\nshell_height = 25;\nwall_thickness = 2;\nnotch_size = 8;\n\ncolor([0.6, 0.4, 0.2]) {\n    difference() {\n        // Main body\n        hull() {\n            sphere(r = shell_width / 2, $fn = 20);\n            translate([shell_depth / 2, 0, 0])\n                sphere(r = shell_width / 2, $fn = 20);\n            translate([0, shell_height / 2, 0])\n                sphere(r = shell_width / 2, $fn = 20);\n        }\n        \n        // Hollow interior\n        scale([0.9, 0.9, 0.9])\n            hull() {\n                sphere(r = shell_width / 2 - wall_thickness, $fn = 20);\n                translate([shell_depth / 2, 0, 0])\n                    sphere(r = shell_width / 2 - wall_thickness, $fn = 20);\n                translate([0, shell_height / 2, 0])\n                    sphere(r = shell_width / 2 - wall_thickness, $fn = 20);\n            }\n            \n        // Notch on the side\n        translate([shell_depth / 4, shell_height / 4, -shell_width / 4])\n            rotate([0, 45, 0])\n                cube([notch_size, notch_size, notch_size], center = true);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.5455,
+      "latency_seconds": 96.7849,
+      "error_message": "Geometries in cache: 12\nGeometry cache size in bytes: 267504\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 1968000\nTotal rendering time: 0:00:00.927\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A black spherical object with four symmetrical cross-shaped cutouts and a small beige double-ended cylindrical rod beneath it.",
+      "generated_code": "sphere_radius = 20;\ncutout_size = 8;\nrod_radius = 2;\nrod_length = 15;\nrod_offset = 12;\n\ncolor([0.1, 0.1, 0.1]) {\n    difference() {\n        sphere(r = sphere_radius, $fn = 100);\n        \n        for (i = [0:3]) {\n            rotate([0, 0, i * 90])\n            translate([0, 0, sphere_radius - 1])\n            rotate([0, 90, 0])\n            cylinder(r = cutout_size / 2, h = 10, $fn = 50);\n        }\n    }\n}\n\ncolor([0.96, 0.96, 0.86]) {\n    translate([0, 0, -sphere_radius + rod_offset]) {\n        rotate([0, 90, 0])\n        cylinder(r = rod_radius, h = rod_length, $fn = 30);\n        \n        translate([0, 0, rod_length])\n        rotate([0, 90, 0])\n        cylinder(r = rod_radius, h = rod_length, $fn = 30);\n    }\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.7209,
+      "latency_seconds": 97.3763,
+      "error_message": "OpenSCAD timed out during syntax check"
+    },
+    {
+      "prompt": "A complex geometric structure composed of a large gray hexagonal prism base, a green vertical panel with rectangular cutouts, blue rectangular prisms, a central gray sphere with a blue stripe, white circular accents, a small pink rectangular prism, and two small purple squares on the base.",
+      "generated_code": "base_radius = 40;\nbase_height = 10;\npanel_width = 60;\npanel_height = 50;\npanel_depth = 5;\nsphere_radius = 15;\nstripe_width = 5;\naccent_radius = 5;\nsmall_prism_size = 10;\n\ncolor(\"gray\")\nhex prism(r = base_radius, h = base_height, $fn = 6);\n\ncolor(\"green\")\ntranslate([0, 0, base_height])\ncube([panel_width, 10, panel_height], center = true);\n\ncolor(\"blue\")\nfor (i = [-1, 1]) {\n    translate([i * 15, 0, base_height + panel_height/2])\n    cube([5, 10, 20], center = true);\n}\n\ncolor(\"gray\")\ntranslate([0, 0, base_height + panel_height + sphere_radius])\nsphere(r = sphere_radius, $fn = 50);\n\ncolor(\"blue\")\ntranslate([0, 0, base_height + panel_height + sphere_radius])\nrotate([90, 0, 0])\ncylinder(r = stripe_width, h = sphere_radius * 2, center = true, $fn = 20);\n\ncolor(\"white\")\nfor (i = [-1, 1]) {\n    translate([i * 25, 0, base_height + panel_height/2])\n    rotate([0, 90, 0])\n    cylinder(r = accent_radius, h = 2, center = true, $fn = 20);\n}\n\ncolor(\"pink\")\ntranslate([20, 20, base_height + 15])\ncube([small_prism_size, small_prism_size, small_prism_size]);\n\ncolor(\"purple\")\nfor (i = [-1, 1]) {\n    translate([i * 10, 0, base_height - 5])\n    cube([5, 5, 5], center = true);\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.5915,
+      "latency_seconds": 97.6418,
+      "error_message": "ERROR: Parser error: syntax error in file C:/Users/aniru/AppData/Local/Temp/tmpxhy4b3sm.scad, line 12\nCan't parse file 'C:\\Users\\aniru\\AppData\\Local\\Temp\\tmpxhy4b3sm.scad'!"
+    },
+    {
+      "prompt": "A hanging light fixture with a round ceiling mount, a thin vertical rod, and three stacked elements at the bottom: a magenta teardrop shape on top, a lime green ring in the middle, and a large pale blue sphere at the base.",
+      "generated_code": "mount_radius = 40;\nmount_thickness = 5;\nrod_height = 80;\nrod_radius = 2;\nteardrop_radius = 15;\nring_outer = 25;\nring_inner = 20;\nring_height = 5;\nsphere_radius = 30;\n\nunion() {\n    // Ceiling mount\n    cylinder(r = mount_radius, h = mount_thickness, $fn = 100);\n\n    // Rod\n    translate([0, 0, mount_thickness])\n    cylinder(r = rod_radius, h = rod_height, $fn = 50);\n\n    // Bottom elements\n    translate([0, 0, mount_thickness + rod_height]) {\n        // Teardrop\n        color(\"magenta\")\n        union() {\n            sphere(r = teardrop_radius, $fn = 50);\n            rotate([0, 0, 45])\n            cylinder(r1 = teardrop_radius, r2 = 0, h = teardrop_radius * 1.5, $fn = 50);\n        }\n\n        // Ring\n        color(\"lime green\")\n        translate([0, 0, -ring_height/2])\n        difference() {\n            cylinder(r = ring_outer, h = ring_height, $fn = 50);\n            translate([0, 0, -1])\n            cylinder(r = ring_inner, h = ring_height + 2, $fn = 50);\n        }\n\n        // Base sphere\n        color(\"skyblue\")\n        sphere(r = sphere_radius, $fn = 50);\n    }\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.6333,
+      "latency_seconds": 97.0473,
+      "error_message": "WARNING: Unable to parse color \"lime green\" in file tmp3d7br0t7.scad, line 30\nTRACE: called by 'color' in file tmp3d7br0t7.scad, line 30\nTRACE: called by 'translate' in file tmp3d7br0t7.scad, line 20\n"
+    },
+    {
+      "prompt": "A geometric object consisting of a cone-shaped base, a central disc-like middle section, an elongated cylindrical extension ending in a small sphere, and a small perpendicular rod near the sphere.",
+      "generated_code": "base_radius = 20;\nbase_height = 30;\ndisc_radius = 25;\ndisc_thickness = 5;\next_radius = 5;\next_length = 40;\nsphere_radius = 8;\nrod_radius = 2;\nrod_length = 15;\n\nunion() {\n    // Cone-shaped base\n    cylinder(r1 = base_radius, r2 = 5, h = base_height, $fn = 50);\n\n    // Central disc-like middle section\n    cylinder(r = disc_radius, h = disc_thickness, $fn = 100);\n\n    // Elongated cylindrical extension\n    translate([0, 0, base_height + disc_thickness])\n    cylinder(r = ext_radius, h = ext_length, $fn = 30);\n\n    // Small sphere at the end\n    translate([0, 0, base_height + disc_thickness + ext_length])\n    sphere(r = sphere_radius, $fn = 50);\n\n    // Small perpendicular rod near the sphere\n    translate([sphere_radius, 0, base_height + disc_thickness + ext_length])\n    rotate([0, 90, 0])\n    cylinder(r = rod_radius, h = rod_length, $fn = 20);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.9464,
+      "latency_seconds": 96.894,
+      "error_message": "Geometries in cache: 9\nGeometry cache size in bytes: 393048\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 3242072\nTotal rendering time: 0:00:02.892\n   Top level object is a 3D object:\n   Simp"
+    },
+    {
+      "prompt": "White cylindrical motor with a protruding shaft, circular flange, and terminal connections; features include a mounting tab and logo embossing.",
+      "generated_code": "motor_radius = 15;\nmotor_height = 40;\nshaft_radius = 3;\nshaft_height = 15;\nflange_radius = 22;\nflange_thickness = 4;\ntab_width = 10;\ntab_length = 15;\nterminal_width = 8;\nterminal_height = 5;\n\nunion() {\n    // Main Motor Body\n    cylinder(r = motor_radius, h = motor_height, $fn = 64);\n    \n    // Flange\n    translate([0, 0, motor_height])\n    cylinder(r = flange_radius, h = flange_thickness, $fn = 64);\n    \n    // Shaft\n    translate([0, 0, motor_height + flange_thickness])\n    cylinder(r = shaft_radius, h = shaft_height, $fn = 32);\n    \n    // Mounting Tab\n    translate([-tab_length/2, motor_radius - 2, motor_height + flange_thickness])\n    cube([tab_length, 5, flange_thickness]);\n    \n    // Terminals\n    translate([motor_radius - 2, 0, motor_height + flange_thickness])\n    cube([terminal_width, 2, terminal_height]);\n    \n    translate([-(motor_radius - 2), 0, motor_height + flange_thickness])\n    cube([terminal_width, 2, terminal_height]);\n    \n    // Logo Embossing (Textured surface)\n    for(i = [0:30:180]) {\n        rotate([0, 0, i])\n        translate([motor_radius - 1, 0, motor_height + flange_thickness])\n        sphere(r = 1.5, $fn = 16);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.5844,
+      "latency_seconds": 97.1846,
+      "error_message": "Geometries in cache: 19\nGeometry cache size in bytes: 194696\nCGAL Polyhedrons in cache: 2\nCGAL cache size in bytes: 3488088\nTotal rendering time: 0:00:04.619\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A pink sphere connected to a green irregular shape by a beige rod, with a large blue ring encircling the pink sphere and a purple cone-shaped connector near the rod.",
+      "generated_code": "sphere_radius = 10;\nrod_length = 25;\nrod_radius = 2;\nring_radius = 15;\nring_thickness = 2;\ncone_radius = 5;\ncone_height = 10;\n\nunion() {\n    // Pink Sphere\n    color([1, 0.75, 0.8])\n    sphere(r = sphere_radius, $fn = 50);\n\n    // Beige Rod\n    color([0.96, 0.96, 0.86])\n    translate([sphere_radius, 0, 0])\n    rotate([0, 90, 0])\n    cylinder(h = rod_length, r = rod_radius, $fn = 20);\n\n    // Green Irregular Shape (Torus-like shape)\n    color([0, 0.5, 0])\n    translate([sphere_radius + rod_length, 0, 0])\n    rotate([0, 90, 0])\n    rotate_extrude(angle = 180, $fn = 50)\n    translate([10, 5, 0])\n    circle(r = 3, $fn = 20);\n\n    // Blue Ring\n    color([0, 0, 1])\n    translate([0, 0, 0])\n    rotate([90, 0, 0])\n    difference() {\n        cylinder(r = ring_radius + ring_thickness, h = 2, center = true, $fn = 100);\n        cylinder(r = ring_radius, h = 3, center = true, $fn = 100);\n    }\n\n    // Purple Cone Connector\n    color([0.5, 0, 0.5])\n    translate([sphere_radius + rod_length - 5, 0, 0])\n    rotate([0, 90, 0])\n    cylinder(r1 = cone_radius, r2 = 0, h = cone_height, $fn = 20);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.791,
+      "latency_seconds": 97.2161,
+      "error_message": "Geometries in cache: 18\nGeometry cache size in bytes: 700000\nCGAL Polyhedrons in cache: 5\nCGAL cache size in bytes: 7173344\nTotal rendering time: 0:00:04.109\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A hollow cylindrical object with a thick outer wall and a slanted elliptical opening on one side, featuring a yellow ring near the top inner edge.",
+      "generated_code": "outer_radius = 20;\ninner_radius = 15;\nheight = 40;\nring_thickness = 2;\nring_height = 3;\nring_offset = 10;\n\n$fn = 100;\n\ndifference() {\n    union() {\n        // Main hollow cylinder\n        difference() {\n            cylinder(r = outer_radius, h = height);\n            cylinder(r = inner_radius, h = height);\n        }\n        \n        // Yellow ring near top inner edge\n        color(\"yellow\")\n        translate([0, 0, ring_offset])\n        difference() {\n            cylinder(r = outer_radius + 1, h = ring_height);\n            cylinder(r = inner_radius, h = ring_height);\n        }\n    }\n    \n    // Slanted elliptical opening\n    translate([outer_radius - 2, 0, 0])\n    rotate([0, 15, 0])\n    scale([1.5, 0.5, 1])\n    cylinder(r = 5, h = height);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6122,
+      "latency_seconds": 97.4626,
+      "error_message": "Geometries in cache: 8\nGeometry cache size in bytes: 116416\nCGAL Polyhedrons in cache: 6\nCGAL cache size in bytes: 4625648\nTotal rendering time: 0:00:07.431\n   Top level object is a 3D object:\n   Simp"
+    },
+    {
+      "prompt": "Composition featuring a blue ring with white text, a flat rectangular panel displaying the Disney Channel logo, and a small blue sphere.",
+      "generated_code": "ring_outer_radius = 20;\nring_inner_radius = 15;\nring_height = 5;\npanel_width = 60;\npanel_height = 40;\npanel_thickness = 2;\nsphere_radius = 5;\n\nunion() {\n    // Blue Ring\n    color(\"blue\")\n    difference() {\n        cylinder(r = ring_outer_radius, h = ring_height, $fn = 100);\n        translate([0, 0, -1])\n        cylinder(r = ring_inner_radius, h = ring_height + 2, $fn = 100);\n    }\n\n    // White Text (Text representation in OpenSCAD)\n    color(\"white\")\n    translate([0, 0, ring_height])\n    linear_extrude(height = 1)\n    text(\"DISNEY\", size = 8, halign = \"center\", valign = \"center\");\n\n    // Flat Rectangular Panel\n    color(\"gray\")\n    translate([-panel_width/2, -panel_height/2, -ring_height - panel_thickness])\n    cube([panel_width, panel_height, panel_thickness]);\n\n    // Disney Channel Logo Representation (Simplified)\n    color(\"white\")\n    translate([-10, -10, -ring_height - panel_thickness - 2])\n    union() {\n        cube([10, 10, 1]);\n        translate([0, 5, 1]) cube([10, 2, 1]);\n        translate([0, 0, 1]) sphere(r = 5, $fn = 20);\n    }\n\n    // Small Blue Sphere\n    color(\"blue\")\n    translate([0, 0, -ring_height - panel_thickness - sphere_radius])\n    sphere(r = sphere_radius, $fn = 50);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6452,
+      "latency_seconds": 97.417,
+      "error_message": "Geometries in cache: 18\nGeometry cache size in bytes: 815512\nCGAL Polyhedrons in cache: 6\nCGAL cache size in bytes: 7257536\nTotal rendering time: 0:00:05.155\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A central red sphere is surrounded by a twisted, hollow red ring with eight symmetrical white, pointed, blade-like structures extending outward.",
+      "generated_code": "sphere_radius = 10;\nring_outer_radius = 25;\nring_thickness = 4;\nblade_length = 20;\nblade_width = 4;\nblade_thickness = 2;\nnum_blades = 8;\n\nunion() {\n    color(\"red\") sphere(r = sphere_radius, $fn = 50);\n\n    color(\"red\") rotate_extrude(angle = 360, $fn = 100)\n        translate([ring_outer_radius, 0, 0])\n        circle(r = ring_thickness, $fn = 20);\n\n    for (i = [0 : num_blades - 1]) {\n        rotate([0, 0, i * (360 / num_blades)])\n        translate([ring_outer_radius + ring_thickness + 2, 0, 0])\n        rotate([0, 90, 0])\n        color(\"white\")\n        linear_extrude(height = blade_length, scale = [1, blade_width / blade_length, 1])\n        polygon([[0, 0], [blade_thickness, 5, 0], [0, 10, 5], [blade_thickness, 5, 10]]);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.8163,
+      "latency_seconds": 96.8124,
+      "error_message": "ERROR: Unable to convert points[1] = [2, 5, 0] to a vec2 of numbers in file tmpluvt2d6w.scad, line 22\nGeometries in cache: 8\nGeometry cache size in bytes: 927856\nCGAL Polyhedrons in cache: 1\nCGAL cach"
+    },
+    {
+      "prompt": "A rectangular base with blue stripes features two brown pyramid shapes, a large white vertical panel at one end, a small white cube at the opposite end, several small black spheres aligned along the base, and a single light purple sphere near the white panel.",
+      "generated_code": "base_width = 100;\nbase_depth = 60;\nbase_height = 5;\nstripe_height = 0.5;\npyramid_size = 15;\npanel_width = 5;\npanel_height = 40;\ncube_size = 8;\nsphere_radius = 3;\nlight_purple_radius = 4;\n\nunion() {\n    // Base with blue stripes\n    union() {\n        color([0.8, 0.8, 0.8]) cube([base_width, base_depth, base_height]);\n        for (i = [0:10:base_width-1]) {\n            color([0, 0, 1]) translate([i, 0, base_height]) cube([10, base_depth, stripe_height]);\n        }\n    }\n\n    // Two brown pyramids\n    color([0.6, 0.4, 0.2]) {\n        translate([10, 10, base_height]) polyhedron(\n            points=[[0,0,0], [pyramid_size,0,0], [pyramid_size,pyramid_size,0], [0,pyramid_size,0], [pyramid_size/2,pyramid_size/2,pyramid_size]],\n            faces=[[0,1,2,3], [0,1,4], [1,2,4], [2,3,4], [3,0,4]]\n        );\n        translate([base_width - 20, 10, base_height]) polyhedron(\n            points=[[0,0,0], [pyramid_size,0,0], [pyramid_size,pyramid_size,0], [0,pyramid_size,0], [pyramid_size/2,pyramid_size/2,pyramid_size]],\n            faces=[[0,1,2,3], [0,1,4], [1,2,4], [2,3,4], [3,0,4]]\n        );\n    }\n\n    // Large white vertical panel\n    color([1, 1, 1]) translate([0, 0, base_height]) cube([panel_width, base_depth, panel_height]);\n\n    // Small white cube\n    color([1, 1, 1]) translate([base_width - cube_size, base_depth - cube_size, base_height]) cube([cube_size, cube_size, cube_size]);\n\n    // Small black spheres\n    for (i = [0:10:base_width-10]) {\n        color([0, 0, 0]) translate([i, base_depth - 10, base_height + 5]) sphere(r = sphere_radius);\n    }\n\n    // Light purple sphere\n    color([0.8, 0.6, 0.8]) translate([panel_width/2, base_depth - 10, base_height + 10]) sphere(r = light_purple_radius);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7313,
+      "latency_seconds": 97.0432,
+      "error_message": "ERROR: The given mesh is not closed! Unable to convert to CGAL_Nef_Polyhedron.\nERROR: The given mesh is not closed! Unable to convert to CGAL_Nef_Polyhedron.\nGeometries in cache: 57\nGeometry cache siz"
+    },
+    {
+      "prompt": "A torus-shaped ring with a rectangular block and a smaller circular cylinder attached on opposite sides.",
+      "generated_code": "torus_radius = 20;\ntorus_thickness = 5;\nblock_size = [15, 15, 10];\ncylinder_radius = 5;\ncylinder_height = 10;\n\nunion() {\n    // Torus using rotate_extrude\n    translate([0, 0, torus_radius])\n    rotate_extrude(angle = 360, convexity = 10)\n    translate([torus_thickness / 2, 0, 0])\n    circle(r = torus_thickness / 2, $fn = 50);\n\n    // Rectangular block on one side\n    translate([torus_radius + block_size[0] / 2, 0, 0])\n    rotate([0, 90, 0])\n    cube(block_size, center = true);\n\n    // Circular cylinder on the opposite side\n    translate([-(torus_radius + cylinder_height / 2), 0, 0])\n    rotate([0, 90, 0])\n    cylinder(r = cylinder_radius, h = cylinder_height, center = true, $fn = 50);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7917,
+      "latency_seconds": 97.1463,
+      "error_message": "ERROR: The given mesh is not closed! Unable to convert to CGAL_Nef_Polyhedron.\nGeometries in cache: 10\nGeometry cache size in bytes: 256704\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 14624"
+    },
+    {
+      "prompt": "Matte white geometric wall panel with a centered, intricate, symmetric floral-inspired cutout design framed by a border.",
+      "generated_code": "panel_width = 200;\npanel_height = 200;\npanel_thickness = 10;\nborder_width = 20;\ncutout_radius = 30;\n\nmodule floral_pattern() {\n    union() {\n        for (i = [0:45:359]) {\n            rotate([0, 0, i])\n            translate([cutout_radius * 0.6, 0, 0])\n            rotate([0, 90, 0])\n            cylinder(r = 5, h = 2, $fn = 20);\n        }\n        sphere(r = cutout_radius * 0.6, $fn = 50);\n    }\n}\n\ndifference() {\n    // Main Panel\n    cube([panel_width, panel_height, panel_thickness], center = true);\n\n    // Frame\n    cube([panel_width - (border_width * 2), panel_height - (border_width * 2), panel_thickness + 2], center = true);\n\n    // Floral Cutout\n    translate([0, 0, panel_thickness / 2])\n    floral_pattern()\n    scale([0.5, 0.5, 1])\n    translate([0, 0, -1]);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7321,
+      "latency_seconds": 96.566,
+      "error_message": "Geometries in cache: 14\nGeometry cache size in bytes: 210160\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 7701264\nTotal rendering time: 0:00:04.063\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A wall-mounted bracket with a circular clamp and a flat, rectangular mounting plate featuring four screw holes.",
+      "generated_code": "plate_width = 60;\nplate_depth = 40;\nplate_thickness = 5;\nclamp_radius = 25;\nclamp_thickness = 8;\nhole_radius = 2;\nscrew_offset = 15;\n\nunion() {\n    difference() {\n        cube([plate_width, plate_depth, plate_thickness], center = true);\n        \n        translate([0, plate_depth / 2 - 5, 0])\n        rotate([90, 0, 0])\n        cylinder(r = hole_radius, h = plate_width + 2, center = true);\n        \n        translate([plate_width / 2 - 5, 0, 0])\n        rotate([0, 90, 0])\n        cylinder(r = hole_radius, h = plate_depth + 2, center = true);\n        \n        translate([-plate_width / 2 + 5, 0, 0])\n        rotate([0, 90, 0])\n        cylinder(r = hole_radius, h = plate_depth + 2, center = true);\n        \n        translate([0, -plate_depth / 2 + 5, 0])\n        rotate([90, 0, 0])\n        cylinder(r = hole_radius, h = plate_width + 2, center = true);\n    }\n\n    translate([0, 0, plate_thickness / 2 + clamp_thickness / 2])\n    difference() {\n        cylinder(r = clamp_radius, h = clamp_thickness, center = true);\n        \n        translate([0, 0, -clamp_thickness / 2 + 1])\n        cube([clamp_radius * 2, clamp_radius * 2, clamp_thickness + 2], center = true);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.619,
+      "latency_seconds": 96.875,
+      "error_message": "Geometries in cache: 12\nGeometry cache size in bytes: 15936\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 380464\nTotal rendering time: 0:00:00.389\n   Top level object is a 3D object:\n   Simpl"
+    },
+    {
+      "prompt": "A wall-mounted bathroom set featuring a black towel rail, a white radiator, and a towel ring on a rectangular white panel.",
+      "generated_code": "panel_width = 400;\npanel_height = 300;\npanel_thickness = 10;\nrail_length = 150;\nrail_radius = 5;\nradiator_width = 80;\nradiator_height = 120;\nring_radius = 15;\n\ncolor([1, 1, 1])\ncube([panel_width, panel_height, panel_thickness]);\n\ntranslate([50, 50, panel_thickness]) {\n    color([0.2, 0.2, 0.2])\n    cylinder(h = rail_length, r = rail_radius, $fn = 20);\n}\n\ntranslate([50, 200, panel_thickness]) {\n    color([0.9, 0.9, 0.9])\n    cube([radiator_width, radiator_height, 10]);\n}\n\ntranslate([300, 100, panel_thickness]) {\n    color([0.8, 0.8, 0.8])\n    rotate([90, 0, 0])\n    difference() {\n        cylinder(h = 5, r = ring_radius, $fn = 50);\n        translate([0, 0, -1])\n        cylinder(h = 7, r = ring_radius - 3, $fn = 50);\n        translate([-ring_radius, -ring_radius, -1])\n        cube([ring_radius * 2, ring_radius, 7]);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.5833,
+      "latency_seconds": 97.2413,
+      "error_message": "Geometries in cache: 13\nGeometry cache size in bytes: 36248\nCGAL Polyhedrons in cache: 5\nCGAL cache size in bytes: 780992\nTotal rendering time: 0:00:00.782\n   Top level object is a 3D object:\n   Simpl"
+    },
+    {
+      "prompt": "A tall, rectangular prism with a cutout notch near the top, intersected by a thick, rounded rectangular ring, all resting on a large, flat, rectangular base.",
+      "generated_code": "base_width = 100;\nbase_depth = 100;\nbase_height = 10;\n\nprism_width = 20;\nprism_depth = 20;\nprism_height = 150;\n\nnotch_width = 10;\nnotch_depth = 10;\nnotch_height = 10;\n\nring_outer_w = 40;\nring_outer_d = 50;\nring_thickness = 8;\nring_height = 20;\n\n$fn = 100;\n\nunion() {\n    // Base\n    cube([base_width, base_depth, base_height], center = true);\n\n    // Prism with notch\n    translate([0, 0, base_height/2 + prism_height/2]) {\n        difference() {\n            cube([prism_width, prism_depth, prism_height], center = true);\n            translate([0, 0, notch_height/2])\n                cube([notch_width, notch_depth, notch_height], center = true);\n        }\n    }\n\n    // Rounded rectangular ring\n    translate([0, 0, base_height/2 + ring_height/2]) {\n        minkowski() {\n            cube([ring_outer_w - ring_thickness, ring_outer_d - ring_thickness, ring_height], center = true);\n            cylinder(r = ring_thickness/2, h = 0.1, center = true);\n        }\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.5833,
+      "latency_seconds": 97.5049,
+      "error_message": "Geometries in cache: 8\nGeometry cache size in bytes: 77824\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 358592\nTotal rendering time: 0:00:00.330\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "Geometric structure with a large cube frame connected to a smaller cube frame by two cylindrical rods, each rod intersected by a small ring-shaped piece.",
+      "generated_code": "large_cube_size = 50;\nsmall_cube_size = 20;\nrod_radius = 3;\nrod_length = 60;\nring_radius = 8;\nring_thickness = 2;\n\nunion() {\n    // Large cube frame\n    difference() {\n        cube(large_cube_size, center = true);\n        cube(large_cube_size - 10, center = true);\n    }\n\n    // Small cube frame\n    translate([rod_length / 2 + small_cube_size / 2, 0, 0])\n    difference() {\n        cube(small_cube_size, center = true);\n        cube(small_cube_size - 10, center = true);\n    }\n\n    // Rod 1\n    translate([0, 0, 0])\n    rotate([0, 90, 0])\n    cylinder(r = rod_radius, h = rod_length, center = true);\n\n    // Rod 2\n    translate([0, 0, 0])\n    rotate([90, 0, 0])\n    cylinder(r = rod_radius, h = rod_length, center = true);\n\n    // Ring 1\n    translate([0, 0, 0])\n    rotate([0, 90, 0])\n    rotate_extrude(angle = 360, convexity = 10)\n    translate([ring_radius, 0, 0])\n    circle(r = ring_thickness);\n\n    // Ring 2\n    translate([0, 0, 0])\n    rotate([90, 0, 0])\n    rotate_extrude(angle = 360, convexity = 10)\n    translate([ring_radius, 0, 0])\n    circle(r = ring_thickness);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6154,
+      "latency_seconds": 97.1013,
+      "error_message": "Geometries in cache: 16\nGeometry cache size in bytes: 163216\nCGAL Polyhedrons in cache: 4\nCGAL cache size in bytes: 1414176\nTotal rendering time: 0:00:01.290\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A smooth, streamlined, wedge-shaped object with a hollow cylindrical opening and a triangular cutout along its sloped surface.",
+      "generated_code": "wedge_width = 60;\nwedge_depth = 40;\nwedge_height = 50;\nhole_radius = 10;\ncutout_size = 20;\n\ndifference() {\n    // Main wedge body\n    hull() {\n        cube([wedge_width, wedge_depth, 0.1]);\n        translate([0, 0, wedge_height])\n            cube([0, 0, 0.1]);\n    }\n\n    // Hollow cylindrical opening\n    translate([wedge_width / 2, wedge_depth / 2, wedge_height / 2])\n        rotate([90, 0, 0])\n            cylinder(r = hole_radius, h = wedge_width, center = true);\n\n    // Triangular cutout along the sloped surface\n    translate([wedge_width / 2, wedge_depth / 2, wedge_height])\n        rotate([0, 90, 0])\n            linear_extrude(height = wedge_depth)\n                polygon(points = [[0, 0], [cutout_size, 0], [0, cutout_size]]);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.7308,
+      "latency_seconds": 97.1955,
+      "error_message": "Geometries in cache: 11\nGeometry cache size in bytes: 17776\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 11344\nTotal rendering time: 0:00:00.078\n   Top level object is a 3D object:\n   Simple"
+    },
+    {
+      "prompt": "A pale green spherical glass lampshade with a narrow cylindrical top, mounted on a curved wooden wall bracket.",
+      "generated_code": "shade_radius = 50;\nshade_height = 60;\nwall_bracket_width = 40;\nwall_bracket_depth = 30;\nwall_bracket_height = 80;\n\ncolor([0.7, 0.9, 0.7]) {\n    // Lampshade\n    difference() {\n        cylinder(r = shade_radius, h = shade_height, $fn = 100);\n        translate([0, 0, 5])\n            cylinder(r = shade_radius - 5, h = shade_height, $fn = 100);\n    }\n\n    // Top cap\n    translate([0, 0, shade_height])\n        sphere(r = 15, $fn = 50);\n}\n\n// Wooden wall bracket\ncolor([0.6, 0.4, 0.2]) {\n    translate([0, -wall_bracket_width / 2, 0]) {\n        // Vertical post\n        cube([wall_bracket_depth, 10, wall_bracket_height]);\n        \n        // Curved arm\n        translate([wall_bracket_depth, 0, wall_bracket_height / 2])\n            rotate([0, 90, 0])\n                cylinder(r = 5, h = 20, $fn = 20);\n        \n        // Mounting plate\n        translate([wall_bracket_depth, 0, wall_bracket_height])\n            cube([10, 10, 5]);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.5345,
+      "latency_seconds": 97.2417,
+      "error_message": "Geometries in cache: 11\nGeometry cache size in bytes: 405640\nCGAL Polyhedrons in cache: 5\nCGAL cache size in bytes: 7999096\nTotal rendering time: 0:00:03.353\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A rectangular stone slab with a rough surface has a smooth, rectangular metal bracket attached to one side, featuring two cylindrical pegs and a small tab.",
+      "generated_code": "slab_width = 100;\nslab_depth = 60;\nslab_thickness = 15;\n\nbracket_width = 20;\nbracket_depth = 10;\nbracket_height = 40;\n\npeg_radius = 5;\npeg_height = 10;\n\ntab_width = 10;\ntab_height = 5;\n\nunion() {\n    // Stone Slab\n    difference() {\n        cube([slab_width, slab_depth, slab_thickness]);\n        for (i = [0:10:slab_width]) {\n            for (j = [0:10:slab_depth]) {\n                translate([i, j, slab_thickness - 1])\n                sphere(r = 2, $fn = 10);\n            }\n        }\n    }\n\n    // Metal Bracket\n    translate([slab_width, 0, 0]) {\n        union() {\n            cube([bracket_width, bracket_depth, bracket_height]);\n            \n            // Pegs\n            translate([bracket_width/2, bracket_depth/2, bracket_height])\n            cylinder(r = peg_radius, h = peg_height, $fn = 20);\n            \n            translate([bracket_width/2, bracket_depth/2, bracket_height + peg_height])\n            cylinder(r = peg_radius, h = peg_height, $fn = 20);\n            \n            // Tab\n            translate([bracket_width - tab_width, bracket_depth - tab_width, bracket_height - tab_height])\n            cube([tab_width, tab_width, tab_height]);\n        }\n    }\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.6863,
+      "latency_seconds": 96.3584,
+      "error_message": "OpenSCAD timed out during syntax check"
+    },
+    {
+      "prompt": "Consisting of a glossy, tortoise-shell patterned torus suspended below a flat, gold-colored disk, connected by a white cylindrical rod and supported by thin gray wires.",
+      "generated_code": "disk_radius = 50;\ndisk_thickness = 5;\ntorus_major_radius = 30;\ntorus_minor_radius = 10;\nrod_radius = 3;\nrod_length = 40;\nwire_count = 6;\nwire_radius = 0.5;\n\n$fn = 100;\n\nmodule tortoise_shell_pattern() {\n    for (i = [0:10:360]) {\n        rotate([0, 0, i])\n        translate([torus_minor_radius, 0, 0])\n        cube([2, 2, 2], center = true);\n    }\n}\n\nmodule tortoise_torus() {\n    color([0.4, 0.2, 0.05])\n    rotate_extrude()\n    translate([torus_major_radius, 0, 0])\n    tortoise_shell_pattern();\n}\n\nmodule gold_disk() {\n    color([1, 0.84, 0])\n    cylinder(r = disk_radius, h = disk_thickness);\n}\n\nmodule white_rod() {\n    color([1, 1, 1])\n    cylinder(r = rod_radius, h = rod_length);\n}\n\nmodule gray_wires() {\n    color([0.5, 0.5, 0.5])\n    for (i = [0:wire_count-1]) {\n        rotate([0, 0, i * (360/wire_count)])\n        translate([torus_major_radius, 0, 0])\n        rotate([0, 90, 0])\n        cylinder(r = wire_radius, h = disk_radius + 5);\n    }\n}\n\nunion() {\n    translate([0, 0, -disk_thickness - rod_length])\n    gold_disk();\n    \n    translate([0, 0, -rod_length])\n    tortoise_torus();\n    \n    white_rod();\n    \n    gray_wires();\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.5441,
+      "latency_seconds": 97.0963,
+      "error_message": "WARNING: Ignoring 3D child object for 2D operation in file tmpvi_9qdd_.scad, line 23"
+    },
+    {
+      "prompt": "A symmetrical, abstract structure composed of four interconnected rings arranged evenly around a central hollow cylindrical core with a ring base.",
+      "generated_code": "core_radius = 10;\ncore_height = 40;\nring_thickness = 4;\nring_radius = 25;\nbase_radius = 30;\nbase_height = 5;\nnum_rings = 4;\n\nmodule hollow_core() {\n    difference() {\n        cylinder(r = core_radius + ring_thickness, h = core_height, $fn = 64);\n        translate([0, 0, -1]) cylinder(r = core_radius, h = core_height + 2, $fn = 64);\n    }\n}\n\nmodule ring_structure() {\n    for (i = [0 : num_rings - 1]) {\n        rotate([0, 0, i * (360 / num_rings)])\n        translate([core_radius + ring_thickness + ring_radius / 2, 0, core_height / 2])\n        rotate([0, 90, 0])\n        cylinder(r = ring_radius, h = ring_thickness, $fn = 64);\n    }\n}\n\nunion() {\n    hollow_core();\n    translate([0, 0, -base_height]) cylinder(r = base_radius, h = base_height, $fn = 64);\n    ring_structure();\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.537,
+      "latency_seconds": 97.3719,
+      "error_message": "Geometries in cache: 12\nGeometry cache size in bytes: 112416\nCGAL Polyhedrons in cache: 3\nCGAL cache size in bytes: 2254336\nTotal rendering time: 0:00:02.740\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "A conical object mounted on a circular base plate with bolt holes, secured by a locking ring.",
+      "generated_code": "base_radius = 50;\nbase_thickness = 5;\ncone_radius = 30;\ncone_height = 60;\nbolt_hole_radius = 4;\nbolt_spacing = 20;\nring_radius = 35;\nring_thickness = 4;\nring_bolt_offset = 15;\n\n$fn = 100;\n\nunion() {\n    difference() {\n        cylinder(r = base_radius, h = base_thickness);\n        \n        for (i = [0 : 3]) {\n            rotate([0, 0, i * 90])\n            translate([base_radius - 5, 0, base_thickness - 1])\n            cylinder(r = bolt_hole_radius, h = 10);\n        }\n    }\n\n    translate([0, 0, base_thickness])\n    cylinder(r1 = cone_radius, r2 = 5, h = cone_height);\n\n    translate([0, 0, base_thickness + cone_height])\n    difference() {\n        cylinder(r = ring_radius, h = ring_thickness);\n        \n        cylinder(r = cone_radius, h = ring_thickness);\n        \n        translate([0, 0, -1])\n        cylinder(r = ring_radius - ring_bolt_offset, h = ring_thickness + 2);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.6038,
+      "latency_seconds": 97.0679,
+      "error_message": "Geometries in cache: 13\nGeometry cache size in bytes: 198776\nCGAL Polyhedrons in cache: 5\nCGAL cache size in bytes: 5730768\nTotal rendering time: 0:00:07.099\n   Top level object is a 3D object:\n   Sim"
+    },
+    {
+      "prompt": "Composition of a sphere, pentagonal prism, rectangular prism, and cylindrical shape intersecting in a compact arrangement.",
+      "generated_code": "sphere_radius = 10;\nprism_side = 8;\nprism_height = 15;\nrect_size = [12, 12, 12];\ncyl_radius = 6;\ncyl_height = 20;\n\n$fn = 100;\n\nunion() {\n    // Sphere\n    translate([-20, 0, 0])\n    sphere(r = sphere_radius);\n\n    // Pentagonal Prism\n    translate([20, 0, 0])\n    rotate([0, 0, 0])\n    cylinder(r = prism_side, h = prism_height, $fn = 5);\n\n    // Rectangular Prism\n    translate([0, 20, 0])\n    cube(rect_size, center = true);\n\n    // Cylindrical shape\n    translate([0, -20, 0])\n    rotate([90, 0, 0])\n    cylinder(r = cyl_radius, h = cyl_height);\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.8333,
+      "latency_seconds": 96.7245,
+      "error_message": "Geometries in cache: 10\nGeometry cache size in bytes: 1468832\nCGAL Polyhedrons in cache: 1\nCGAL cache size in bytes: 12733600\nTotal rendering time: 0:00:06.850\n   Top level object is a 3D object:\n   S"
+    },
+    {
+      "prompt": "A black cylindrical clamp with a ratcheted rail on top and a threaded bolt with a label and hex nut on one end.",
+      "generated_code": "clamp_radius = 20;\nclamp_height = 40;\nrail_width = 10;\nrail_length = 60;\nbolt_radius = 5;\nbolt_length = 50;\nnut_size = 8;\n\ncolor([0.1, 0.1, 0.1]) {\n    // Main Clamp Body\n    difference() {\n        cylinder(r = clamp_radius, h = clamp_height, $fn = 64);\n        translate([0, 0, 5])\n            cylinder(r = clamp_radius - 2, h = clamp_height, $fn = 64);\n    }\n\n    // Ratcheted Rail\n    translate([0, 0, clamp_height])\n    difference() {\n        cube([rail_length, rail_width, 5], center = true);\n        for (i = [0:5:rail_length-5]) {\n            translate([i, 0, 0])\n                cube([2, rail_width, 2], center = true);\n        }\n    }\n\n    // Threaded Bolt\n    translate([clamp_radius - 2, 0, clamp_height / 2])\n    rotate([0, 90, 0])\n    union() {\n        cylinder(r = bolt_radius, h = bolt_length, $fn = 32);\n        \n        // Label\n        translate([0, 0, 15])\n            cube([bolt_radius * 2, 2, 10], center = true);\n            \n        // Hex Nut\n        translate([0, 0, bolt_length])\n            cylinder(r = nut_size / 1.732, h = 4, $fn = 6);\n    }\n}",
+      "syntax_valid": true,
+      "renders_successfully": true,
+      "token_overlap": 0.8448,
+      "latency_seconds": 97.2169,
+      "error_message": "Geometries in cache: 22\nGeometry cache size in bytes: 46544\nCGAL Polyhedrons in cache: 8\nCGAL cache size in bytes: 1708624\nTotal rendering time: 0:00:01.528\n   Top level object is a 3D object:\n   Simp"
+    },
+    {
+      "prompt": "A central vertical rod connected to a horizontal shaft with three spherical joints, each featuring two perpendicular cylindrical extensions.",
+      "generated_code": "rod_radius = 5;\nrod_height = 100;\nshaft_radius = 3;\nshaft_length = 40;\njoint_radius = 12;\nextension_radius = 4;\nextension_length = 15;\n\nunion() {\n    // Central vertical rod\n    cylinder(r = rod_radius, h = rod_height, $fn = 50);\n\n    // Horizontal shaft\n    translate([0, 0, rod_height / 2])\n    rotate([0, 90, 0])\n    cylinder(r = shaft_radius, h = shaft_length, $fn = 30);\n\n    // Three spherical joints\n    for (i = [0:2]) {\n        angle = i * 120;\n        translate([\n            cos(angle) * (rod_height / 2 + joint_radius / 2),\n            sin(angle) * (rod_height / 2 + joint_radius / 2),\n            rod_height / 2\n        ]) {\n            // Spherical joint\n            sphere(r = joint_radius, $fn = 50);\n            \n            // Two perpendicular cylindrical extensions\n            for (j = [0:1]) {\n                rotate([0, 0, angle + (j * 90)])\n                translate([0, 0, joint_radius])\n                cylinder(r = extension_radius, h = extension_length, $fn = 20);\n            }\n        }\n    }\n}",
+      "syntax_valid": false,
+      "renders_successfully": false,
+      "token_overlap": 0.7869,
+      "latency_seconds": 95.927,
+      "error_message": "OpenSCAD timed out during syntax check"
+    }
+  ]
+}
